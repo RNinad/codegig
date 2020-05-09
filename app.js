@@ -1,5 +1,9 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
+const Handlebars = require('handlebars')
+const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access')
+
+
 const bodyParser = require('body-parser');
 const path = require('path');
 
@@ -14,14 +18,16 @@ db.authenticate()
 const app = express();
 
 // Handlebars
-app.engine('handlebars', exphbs({ defaultLayout: 'main'}));
+app.engine('handlebars', exphbs({
+    handlebars: allowInsecurePrototypeAccess(Handlebars)
+}, { defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
 // Set static folder 
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-app.get('/', (req,res) => res.send('INDEX'));
+// Index route
+app.get('/', (req,res) => res.render('index', {layout: 'landing'}));
 
 //Gig routes
 app.use('/gigs', require('./routes/gigs'));
